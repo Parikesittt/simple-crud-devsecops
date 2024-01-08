@@ -7,5 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'id',
+        'name',
+        'email',
+        'mobile_number',
+        'section',
+        'course',
+        'profile_image',
+    ];
+
+    protected $keyType = 'string';
+
+    public function get_image_url()
+    {
+        if ($this->profile_image) {
+            return url('');
+        } else {
+            return "https://ui-avatars.com/api/?name=" . $this->name;
+        }
+    }
 }

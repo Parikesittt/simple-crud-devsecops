@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 class StudentController extends Controller
 {
@@ -23,9 +23,31 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStudentRequest $request)
+    public function store()
     {
-        //
+        $validated = request()->validate([
+            'name' => 'required|min:3|max:60',
+            'email' => 'required|email',
+            'mobile_number' => 'required|min:11|max:11',
+            'section' => 'required',
+            'course' => 'required',
+            'profile_image' => 'image|nullable',
+        ]);
+
+        //Generate Custom ID
+        $id = IdGenerator::generate([
+            'table' => 'students',
+            'length' => 14,
+            'prefix' => 'SID-' . date('m') . date('d') . date('y'),
+        ]);
+
+        if (!$validated) {
+            return redirect('students.create')->with('failed', 'Not validated');
+        } else {
+            $validated['id'] = $id;
+            Student::create($validated);
+            return redirect('dashboard')->with('success', 'Student Created!');
+        }
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Http\Requests\UpdateStudentRequest;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -47,20 +48,12 @@ class StudentController extends Controller
         }
 
         if (!$validated) {
-            return redirect('students.create')->with('failed', 'Not validated');
-        } else {
-            $validated['id'] = $id;
-            Student::create($validated);
-            return redirect()->route('dashboard')->with('success', 'Student Created!');
+            return redirect('students.create');
         }
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Student $student)
-    {
-        //
+        $validated['id'] = $id;
+        Student::create($validated);
+        return redirect()->route('dashboard')->with('success', 'Student Created!');
     }
 
     /**
@@ -68,15 +61,42 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        //
+        $data = [
+            'title' => 'Edit Student',
+            'student' => $student,
+        ];
+
+        return view('students.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateStudentRequest $request, Student $student)
+    public function update(Student $student)
     {
-        //
+        $validated = request()->validate([
+            'name' => 'required|min:3|max:60',
+            'email' => 'required|email',
+            'mobile_number' => 'required|min:11|max:11',
+            'section' => 'required',
+            'course' => 'required',
+            'profile_image' => 'image|nullable',
+        ]);
+
+        if (request()->has('profile_image')) {
+            $image_path = request()->file('profile_image')->store('images/student-profile-images', 'public');
+            $validated['profile_image'] = $image_path;
+
+            Storage::disk('public')->delete($student->image ?? '');
+        }
+
+        if (!$validated) {
+            return redirect('students.edit');
+        }
+
+        $student->update($validated);
+
+        return redirect()->route('dashboard')->with('success', 'Student Updated!');
     }
 
     /**

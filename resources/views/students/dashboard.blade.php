@@ -20,6 +20,7 @@
                         <th>Section</th>
                         <th>Course</th>
                         <th>Profile Picture</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -31,9 +32,15 @@
                             <td>{{ $student->mobile_number }}</td>
                             <td>{{ $student->section }}</td>
                             <td>{{ $student->course }}</td>
-                            <td class="d-flex justify-content-center"><img src="{{ $student->get_image_url() }}"
-                                    alt=""
-                                    style="border-radius: 50%; width:100px; height: 100px    object-fit: cover;"></td>
+                            <td class="d-flex justify-content-center">
+                                <img src="{{ $student->get_image_url() }}" alt=""
+                                    style="border-radius: 50%; width:100px; height: 100px;    object-fit: cover;">
+                            </td>
+                            <td>
+                                <a href="{{ route('students.edit', $student) }}" class="btn btn-success"><i
+                                        class="fa-solid fa-pen-to-square"></i></a>
+                                <a href="" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -46,6 +53,7 @@
                         <th>Section</th>
                         <th>Course</th>
                         <th>Profile Picture</th>
+                        <th>Actions</th>
                     </tr>
                 </tfoot>
             </table>

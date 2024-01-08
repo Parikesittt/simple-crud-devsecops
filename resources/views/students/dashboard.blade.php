@@ -32,7 +32,8 @@
                             <td>{{ $student->section }}</td>
                             <td>{{ $student->course }}</td>
                             <td class="d-flex justify-content-center"><img src="{{ $student->get_image_url() }}"
-                                    alt="" style="border-radius: 50%;"></td>
+                                    alt=""
+                                    style="border-radius: 50%; width:100px; height: 100px    object-fit: cover;"></td>
                         </tr>
                     @endforeach
                 </tbody>

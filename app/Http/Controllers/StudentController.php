@@ -41,12 +41,17 @@ class StudentController extends Controller
             'prefix' => 'SID-' . date('m') . date('d') . date('y'),
         ]);
 
+        if (request()->has('profile_image')) {
+            $image_path = request()->file('profile_image')->store('images/student-profile-images', 'public');
+            $validated['profile_image'] = $image_path;
+        }
+
         if (!$validated) {
             return redirect('students.create')->with('failed', 'Not validated');
         } else {
             $validated['id'] = $id;
             Student::create($validated);
-            return redirect('dashboard')->with('success', 'Student Created!');
+            return redirect()->route('dashboard')->with('success', 'Student Created!');
         }
     }
 

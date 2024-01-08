@@ -22,7 +22,7 @@ class Student extends Model
     public function get_image_url()
     {
         if ($this->profile_image) {
-            return url('');
+            return url('storage/' . $this->profile_image);
         } else {
             return "https://ui-avatars.com/api/?name=" . $this->name;
         }

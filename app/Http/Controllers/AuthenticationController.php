@@ -4,12 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthenticationController extends Controller
 {
     public function login()
     {
+
+        if (Auth::viaRemember() || auth()->check()) {
+            return redirect()->route('dashboard');
+        }
+
         return view('students.login');
     }
 
@@ -48,6 +54,8 @@ class AuthenticationController extends Controller
             request()->session()->regenerate();
             return redirect()->route('dashboard')->with('success', 'Logged in!');
         }
+
+        return redirect()->route('login')->with('failed', 'Account does not exists!');
     }
 
     public function logout()

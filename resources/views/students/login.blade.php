@@ -12,6 +12,7 @@
         <div class="card">
             <div class="card-header">
                 <p class="fw-bold">Login</p>
+                @include('shared.status_message')
             </div>
             <div class="card-body">
                 <form action="{{ route('login') }}" method="post">

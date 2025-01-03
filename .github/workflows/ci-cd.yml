@@ -134,6 +134,7 @@ jobs:
     name: Security Testing (DAST)
     needs: security-sast
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 

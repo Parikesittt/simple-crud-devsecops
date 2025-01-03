@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+
 
 class AuthenticationController extends Controller
 {
@@ -15,6 +17,8 @@ class AuthenticationController extends Controller
         if (Auth::viaRemember() || auth()->check()) {
             return redirect()->route('dashboard');
         }
+
+        Log::info('User logged in', ['user_id' => $user->id]);
 
         return view('students.login');
     }

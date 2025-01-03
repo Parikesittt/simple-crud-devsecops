@@ -16,6 +16,6 @@ class DashboardController extends Controller
             'students' => $students,
         ];
 
-        return view("students.dashboard", $data);
+        return view('dashboard', compact('students'));
     }
 }

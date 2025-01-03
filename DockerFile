@@ -1,0 +1,32 @@
+# Gunakan base image PHP dengan Apache
+FROM php:8.2-apache
+
+# Atur direktori kerja di dalam container
+WORKDIR /var/www/html
+
+# Copy seluruh file proyek ke container
+COPY . .
+
+# Install ekstensi PHP yang diperlukan
+RUN apt-get update && apt-get install -y \
+    libzip-dev unzip \
+    && docker-php-ext-install zip pdo_mysql
+
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+# Jalankan optimisasi Laravel (opsional)
+RUN composer install --no-dev --optimize-autoloader && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache
+
+# Pastikan permissions untuk storage dan cache
+RUN chmod -R 775 storage bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache
+
+# Jalankan aplikasi dengan PHP Artisan
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+
+# Ekspos port 8000 untuk aplikasi Laravel
+EXPOSE 8000

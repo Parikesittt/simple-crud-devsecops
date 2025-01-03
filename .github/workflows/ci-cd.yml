@@ -137,6 +137,9 @@ jobs:
       contents: read
       security-events: write
       actions: read
+      issues: write
+      checks: write
+      pull-request: write
 
     steps:
       - uses: actions/checkout@v3
@@ -177,8 +180,8 @@ jobs:
         with:
           target: 'http://localhost:8000'
           rules_file_name: '.zap/rules.tsv'
-          allow_issue_writing: true
-          cmd_options: '-a'
+          allow_issue_writing: false
+          cmd_options: '-a -j'
 
   deploy:
     name: Deploy to GitHub Pages

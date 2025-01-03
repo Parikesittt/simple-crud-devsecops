@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
+ *
  *
  * @property string $id
  * @property string $name
@@ -30,7 +30,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereProfileImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereSection($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 class Student extends Model
 {

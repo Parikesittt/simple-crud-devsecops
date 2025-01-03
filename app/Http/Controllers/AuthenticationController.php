@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Log;
 
 class AuthenticationController extends Controller
 {
-    public function login(Request $request)
+    public function login()
     {
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        if (Auth::viaRemember() || auth()->check()) {
             return redirect()->route('dashboard');
         }
 
@@ -62,7 +62,9 @@ class AuthenticationController extends Controller
 
     public function logout()
     {
-        Auth()::logout();
+        auth()->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
 
         return redirect()->route('login');
     }

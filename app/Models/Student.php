@@ -47,7 +47,7 @@ class Student extends Model
 
     protected $keyType = 'string';
 
-    public function get_image_url()
+    public function getImageUrl()
     {
         if ($this->profile_image) {
             return url('storage/' . $this->profile_image);

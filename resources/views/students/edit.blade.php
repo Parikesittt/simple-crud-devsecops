@@ -61,7 +61,7 @@
                             </div>
 
                             <div class="d-flex justify-content-center">
-                                <img src="{{ $student->get_image_url() }}" alt=""
+                                <img src="{{ $student->getImageUrl() }}" alt=""
                                     style="width:200px; height:200px; object-fit: cover;  border-radius: 50%;"
                                     class="mb-3" id="profile-picture-preview">
                             </div>

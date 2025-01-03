@@ -55,7 +55,7 @@ class StudentController extends Controller
         Log::info('Data stored:', $validated);
 
         $validated['id'] = $id;
-        Student::create($validated);
+        Student::query()->create($validated);
         return redirect()->route('dashboard')->with('success', 'Student Created!');
     }
 

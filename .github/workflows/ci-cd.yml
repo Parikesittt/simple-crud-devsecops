@@ -131,55 +131,69 @@ jobs:
           vendor/bin/phpcs --standard=PSR12 app tests
 
   security-dast:
-    name: Security Testing (DAST)
-    needs: security-sast
-    runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: laravel
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+  name: Security Testing (DAST)
+  needs: security-sast
+  runs-on: ubuntu-latest
+  services:
+    mysql:
+      image: mysql:8.0
+      env:
+        MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        MYSQL_DATABASE: laravel
+      ports:
+        - 3306:3306
+      options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-    steps:
-      - uses: actions/checkout@v3
+  steps:
+    - uses: actions/checkout@v3
 
-      - name: Restore Cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            vendor
-            node_modules
-            public/build
-          key: ${{ runner.os }}-build-${{ github.sha }}
+    - name: Restore Cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          vendor
+          node_modules
+          public/build
+        key: ${{ runner.os }}-build-${{ github.sha }}
 
-      - name: Set up Application
-        run: |
-          php -r "file_exists('.env') || copy('.env.example', '.env');"
-          php artisan key:generate
-          php artisan migrate --force
-          php artisan serve
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: simple_crud
-          DB_USERNAME: root
-          DB_PASSWORD: null
+    - name: Set up Application
+      run: |
+        php -r "file_exists('.env') || copy('.env.example', '.env');"
+        php artisan key:generate
+        php artisan migrate --force
+        php artisan serve --host=0.0.0.0 --port=8000 &
+      env:
+        DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_DATABASE: simple_crud
+        DB_USERNAME: root
+        DB_PASSWORD: null
 
-      - name: Wait for Application
-        run: |
-          timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8000)" != "200" ]]; do sleep 5; done' || false -v
+    - name: Wait for Application
+      run: |
+        for i in {1..60}; do
+          if [[ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000)" == "200" ]]; then
+            echo "Server is up!"
+            exit 0
+          fi
+          echo "Waiting for server..."
+          sleep 5
+        done
+        echo "Server did not start within 5 minutes."
+        exit 1
 
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
-        with:
-          target: 'http://localhost:8000'
-          rules_file_name: '.zap/rules.tsv'
-          cmd_options: '-a'
+    - name: Verify Server Status
+      run: |
+        curl -I http://localhost:8000 || echo "Server not reachable"
+
+    - name: ZAP Scan
+      uses: zaproxy/action-full-scan@v0.4.0
+      with:
+        target: 'http://localhost:8000'
+        rules_file_name: '.zap/rules.tsv'
+        cmd_options: '-a'
+
 
   deploy:
     name: Deploy to GitHub Pages

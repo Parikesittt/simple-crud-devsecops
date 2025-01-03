@@ -6068,7 +6068,7 @@
             ],
             "description": "Docker files for running a basic Laravel application.",
             "keywords": [
-                "owasp/zap2docker-stable",
+                "docker",
                 "laravel"
             ],
             "support": {

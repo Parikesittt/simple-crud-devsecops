@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Http\Requests\UpdateStudentRequest;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class StudentController extends Controller
 {
@@ -50,6 +51,8 @@ class StudentController extends Controller
         if (!$validated) {
             return redirect('students.create');
         }
+
+        Log::info('Data stored:', $validated);
 
         $validated['id'] = $id;
         Student::create($validated);

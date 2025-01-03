@@ -18,8 +18,6 @@ class AuthenticationController extends Controller
             return redirect()->route('dashboard');
         }
 
-        Log::info('User logged in', ['user_id' => $user->id]);
-
         return view('students.login');
     }
 

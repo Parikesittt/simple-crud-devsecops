@@ -194,7 +194,6 @@ jobs:
         rules_file_name: '.zap/rules.tsv'
         cmd_options: '-a'
 
-
   deploy:
     name: Deploy to GitHub Pages
     needs: security-dast

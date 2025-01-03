@@ -172,7 +172,7 @@ jobs:
 
       - name: Wait for Application
         run: |
-          timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8000)" != "200" ]]; do sleep 5; done' || false -v
+          imeout 300 bash -c 'while true; do status_code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000); echo "Status code: $status_code"; sleep 5; done' || false
 
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.4.0

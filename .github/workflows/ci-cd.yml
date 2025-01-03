@@ -149,12 +149,12 @@ jobs:
 
       - name: Restore Cache
         uses: actions/cache@v3
-          with:
-            path: |
-              vendor
-              node_modules
-              public/build
-            key: ${{ runner.os }}-build-${{ github.sha }}
+        with:
+          path: |
+            vendor
+            node_modules
+            public/build
+          key: ${{ runner.os }}-build-${{ github.sha }}
 
        - name: Wait for Application
          run: |

@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline for Laravel
 
 on:
   push:
@@ -8,43 +8,107 @@ on:
   pull_request:
     branches:
       - main
+      - dev
 
 jobs:
   build:
+    name: Build and Install Dependencies
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: '16'
+          php-version: 8.2
+          extensions: zip, pdo_mysql
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: npm install
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Cache Laravel files
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
 
   test:
+    name: Run Tests
     runs-on: ubuntu-latest
+    needs: build
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run unit tests
-        run: npm test
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
 
-  security_scan:
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run PHPUnit tests
+        run: php artisan test
+
+  security_scanning:
+    name: Static Code Analysis (SAST)
     runs-on: ubuntu-latest
+    needs: test
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Run ESLint
-        run: npx eslint .
 
-  deploy_staging:
+      - name: Install PHPStan
+        run: composer require --dev phpstan/phpstan
+
+      - name: Run PHPStan analysis
+        run: vendor/bin/phpstan analyse --level=max
+
+  dast_testing:
+    name: DAST Testing
     runs-on: ubuntu-latest
-    needs: [build, test, security_scan]
+    needs: security_scanning
+
     steps:
-      - name: Deploy to staging
-        run: echo "Deploying to staging..."
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Start Laravel server
+        run: php artisan serve --host=0.0.0.0 --port=8000 &
+        env:
+          APP_ENV: testing
+          APP_DEBUG: true
+
+      - name: Run OWASP ZAP Scan
+        uses: jupyterhub/action-zap@v0.4.0
+        with:
+          target: http://127.0.0.1:8000
+
+  deploy:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: dast_testing
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Staging Server
+        run: |
+          rsync -avz --exclude '.env' ./ user@staging-server:/var/www/html
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}

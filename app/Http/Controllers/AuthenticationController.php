@@ -32,7 +32,7 @@ class AuthenticationController extends Controller
             'password' => 'required|confirmed|min:8',
         ]);
 
-        User::create([
+        User::query()->create([
             'name' => $validate['name'],
             'email' => $validate['email'],
             'password' => Hash::make($validate['password']),
@@ -50,7 +50,7 @@ class AuthenticationController extends Controller
 
         $remmember_me = $request->has('remmember-me');
 
-        if (auth()->attempt($validate, $remmember_me)) {
+        if (Auth::attempt($validate, $remmember_me)) {
             request()->session()->regenerate();
             return redirect()->route('dashboard')->with('success', 'Logged in!');
         }
@@ -60,7 +60,7 @@ class AuthenticationController extends Controller
 
     public function logout()
     {
-        auth()->logout();
+        Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
 

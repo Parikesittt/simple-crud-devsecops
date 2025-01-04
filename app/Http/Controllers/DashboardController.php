@@ -9,13 +9,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $students = Student::orderBy('created_at', 'DESC')->get();
+        $students = Student::query()->orderBy('created_at', 'DESC')->get();
 
         $data = [
             'title' => 'Create Student',
             'students' => $students,
         ];
 
-        return view("students.dashboard", $data);
+        return view('students.dashboard', compact('students'));
     }
 }

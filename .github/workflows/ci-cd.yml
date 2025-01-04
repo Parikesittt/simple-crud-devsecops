@@ -193,7 +193,7 @@ jobs:
             report.json
           retention-days: 5
 
-  yamlCopydeploy:
+  deploy:
     name: Deploy to GitHub Pages
     needs: security-dast
     runs-on: ubuntu-latest
@@ -224,7 +224,6 @@ jobs:
         run: |
           php -r "file_exists('.env') || copy('.env.example', '.env');"
           php artisan key:generate
-          # Tambahkan base URL untuk GitHub Pages
           echo "APP_URL=https://parikesittt.github.io/simple-crud-devsecops" >> .env
           
       - name: Build Application
@@ -235,10 +234,8 @@ jobs:
 
       - name: Create Build Directory
         run: |
-          mkdir build
+          mkdir -p build
           cp -r public/* build/
-          cp index.php build/
-          cp .htaccess build/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

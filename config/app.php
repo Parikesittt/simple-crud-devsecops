@@ -55,9 +55,8 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
-
-    'asset_url' => env('ASSET_URL'),
+    'url' => env('APP_URL', 'https://parikesittt.github.io/simple-crud-devsecops'),
+    'asset_url' => env('ASSET_URL', '/simple-crud-devsecops'),
 
     /*
     |--------------------------------------------------------------------------

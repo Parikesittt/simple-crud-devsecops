@@ -193,12 +193,11 @@ jobs:
             report.json
           retention-days: 5
 
-  deploy:
+  yamlCopydeploy:
     name: Deploy to GitHub Pages
     needs: security-dast
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
     permissions:
       contents: write
       pages: write
@@ -221,13 +220,28 @@ jobs:
           npm install
           npm run build
 
-      - name: Configure Git
+      - name: Configure Application
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate
+          # Tambahkan base URL untuk GitHub Pages
+          echo "APP_URL=https://parikesittt.github.io/simple-crud-devsecops" >> .env
+          
+      - name: Build Application
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+      - name: Create Build Directory
+        run: |
+          mkdir build
+          cp -r public/* build/
+          cp index.php build/
+          cp .htaccess build/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./build

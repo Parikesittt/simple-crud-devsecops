@@ -183,6 +183,16 @@ jobs:
           allow_issue_writing: false
           cmd_options: '-a -j'
 
+      - name: Upload ZAP Scan Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-scan-results
+          path: |
+            report.html
+            report.xml
+            report.json
+          retention-days: 5
+
   deploy:
     name: Deploy to GitHub Pages
     needs: security-dast

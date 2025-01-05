@@ -31,7 +31,7 @@ if (file_exists($maintenance = __DIR__.'/../simple-crud-devsecops/storage/framew
 |
 */
 
-require __DIR__.'/...simple-crud-devsecops/vendor/autoload.php';
+require __DIR__.'/../simple-crud-devsecops/vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------

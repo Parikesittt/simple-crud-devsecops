@@ -31,7 +31,11 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 |
 */
 
+<<<<<<< HEAD
 require __DIR__.'/../vendor/autoload.php';
+=======
+require __DIR__.'/../simple-crud-devsecops/vendor/autoload.php';
+>>>>>>> 0e506bbe53e7afe0155028abf553a4557c001e2c
 
 /*
 |--------------------------------------------------------------------------

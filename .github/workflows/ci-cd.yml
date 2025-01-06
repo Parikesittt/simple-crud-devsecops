@@ -198,6 +198,10 @@ jobs:
     needs: security-dast
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -215,8 +219,27 @@ jobs:
         run: |
           npm install
           npm run build
+
+      - name: Configure Application
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate
+          echo "APP_URL=https://parikesittt.github.io/simple-crud-devsecops" >> .env
+          
+      - name: Build Application
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+      - name: Create Build Directory
+        run: |
+          mkdir -p build
+          cp -r public/* build/
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public/build
+
+          publish_dir: ./public
